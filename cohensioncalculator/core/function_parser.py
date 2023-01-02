@@ -68,45 +68,51 @@ class ClassParser:
 
     def group_class_rows(self, rows: list[str]) -> list[list]:
         class_groups = []
-        file_split_by_class = []
+        split_file = []
         for index, row in enumerate(rows):
-            if self.row_is_class_header(row):
-                file_split_by_class.append(index)
-        max_len = len(file_split_by_class) - 1
-        for i, j in enumerate(file_split_by_class):
-            if i == max_len:
-                class_groups.append(rows[file_split_by_class[i] :])
+            self.row_is_class_header(row, index, split_file)
+        for i, _ in enumerate(split_file):
+            if i == (len(split_file) - 1):
+                class_groups.append(rows[split_file[i] :])
             else:
-                class_groups.append(
-                    rows[file_split_by_class[i] : file_split_by_class[i + 1]]
-                )
+                class_groups.append(rows[split_file[i] : split_file[i + 1]])
         return class_groups
 
     @staticmethod
-    def count_classes(funcs: list[str]):
-        counter = 0
-        for item in funcs:
-            if item.startswith("class "):
-                counter += 1
-        return counter
+    def count_classes(class_groups: list[str]):
+        return len(class_groups)
 
     @staticmethod
-    def row_is_class_header(row: str):
+    def row_is_class_header(row: str, index: int, split_file: list) -> None:
         if row.startswith("class "):
-            return True
+            split_file.append(index)
+        else:
+            return
+
+    @staticmethod
+    def get_class_name(grouped_class: list[str]) -> bool:
+        header = grouped_class[0]
+        return header.split(" ")[1].split(":")[0]
+
+    def class_arg_parser(self, grouped_class):
+        if self.is_init_in_class(grouped_class):
+            args = self.class_init_parser()
+        else:
+            args = self.class_noinit_parser()
+        return args
+
+    @staticmethod
+    def is_init_in_class(grouped_class: list[str]) -> bool:
+        for row in grouped_class:
+            if "def __init__(self," in row:
+                return True
         else:
             return False
 
-    @staticmethod
-    def get_class_name(row: str) -> bool:
-        if row.startswith("class "):
-            return row.split(" ")[1].split(":")[0]
+    def class_init_parser(self):
+        return "init"
 
-    def class_arg_parser():
-        pass
+    def class_noinit_parser(self):
+        return "noinit"
 
-    def class_init_parser():
-        pass
 
-    def class_noinit_parser():
-        pass

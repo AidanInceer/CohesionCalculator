@@ -1,4 +1,4 @@
-class BasicTwo:
+class BasicOne:
     def __init__(self, a, b) -> None:
         self.a = a
         self.b = b
