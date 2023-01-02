@@ -12,12 +12,5 @@ if __name__ == "__main__":
     num_classes = cp.count_classes(class_groups)
     for grouped_class in class_groups:
         class_name = cp.get_class_name(grouped_class)
-        class_args = cp.class_arg_parser(grouped_class)
-        print(class_name, class_args)
-
-    # basic function parsing
-    fp = FunctionParser()
-    split_file = fp.read_file()
-    cnt = fp.count_functions(split_file)
-    headers = fp.create_function_headers(split_file)
-    args = fp.count_function_arguments(headers)
+        class_args = cp.class_init_arg_parser(grouped_class)
+        print(f"name: {class_name}, class_args:{class_args}")
