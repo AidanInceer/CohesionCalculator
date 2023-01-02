@@ -10,7 +10,10 @@ class BasicOne:
         return self.a - self.b
 
     def sub2(self):
-        return self.b + self.a
+        return "hello"
+
+    def sub3(self):
+        return "data2"
 
 
 class BasicTwo:
@@ -38,4 +41,4 @@ class BasicThree:
         return self.a - self.b
 
     def sub2(self):
-        return self.b + self.a
+        return "jaffacake"
