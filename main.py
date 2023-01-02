@@ -1,4 +1,4 @@
-from cohensioncalculator.core.function_parser import ClassParser, FunctionParser
+from src.cohesion.core.function_parser import ClassParser, FunctionParser
 
 if __name__ == "__main__":
     module = "./data/sample.py"

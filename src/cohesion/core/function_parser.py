@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from cohensioncalculator.utils.logger import logger
+from src.utils.logger import logger
 
 
 @dataclass
