@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from src.utils.logger import logger
-
 
 @dataclass
 class FunctionParser:

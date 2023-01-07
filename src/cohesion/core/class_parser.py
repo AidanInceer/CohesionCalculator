@@ -8,7 +8,6 @@ from src.utils.logger import logger
 class ClassParser:
     module: str
 
-    ##### Core methods ######
     def read_file(self):
         with open(self.module, "r") as f:
             data = f.readlines()
@@ -42,7 +41,6 @@ class ClassParser:
         header = grouped_class[0]
         return header.split(" ")[1].split(":")[0]
 
-    ##### Init Parser ######
     def class_init_arg_parser(self, grouped_class):
         if self.is_init_in_class(grouped_class):
             args = self.class_init_parser(grouped_class)
@@ -80,7 +78,6 @@ class ClassParser:
                 args.append(cleaned_arg)
         return args
 
-    ##### Class Cohesion ######
     def get_class_function_names(self, grouped_class):
         fp = FunctionParser(self.module)
         class_functions = fp.group_function_rows(grouped_class)
@@ -92,7 +89,12 @@ class ClassParser:
                 class_function_names.append(function_name)
         return class_function_names
 
-    def is_class_cohesive(
+
+@dataclass
+class ClassCohesion:
+    module: str
+
+    def calculate(
         self, grouped_class: list[str], class_args: list[str], num_funcs: int
     ):
         fp = FunctionParser(self.module)

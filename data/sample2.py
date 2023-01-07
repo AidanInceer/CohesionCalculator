@@ -1,3 +1,6 @@
+import inspect
+import sys
+
 class BasicOne:
     def __init__(self, a, b) -> None:
         self.a = a
@@ -42,3 +45,6 @@ class BasicThree:
 
     def sub2(self):
         return "jaffacake"
+
+
+print(inspect.getmembers(sys.modules[__name__]))
