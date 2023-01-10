@@ -3,12 +3,11 @@ import importlib
 import inspect
 import os
 from dataclasses import dataclass
-from types import ModuleType
 
 import pandas as pd
 
-from src.core.class_parser import ClassParser
-from src.core.data_objects import ModuleObjectInfo
+from src.parsing.class_parser import ClassParser
+from src.parsing.data_objects import ModuleObjectInfo
 from src.utils.logger import logger
 
 
@@ -29,17 +28,23 @@ class DirectoryParser:
         for file in self.files:
             if "__init__" not in file:
                 formatted_file = str(os.path.splitext(file)[0])[2:].replace("\\", ".")
+                logger.info(f"Parsing Module: {formatted_file}")
                 module = importlib.import_module(formatted_file)
                 module_info = ModuleObjectInfo(
                     formatted_file,
                     module,
                     self.cohesion_data,
                 )
-                logger.info(f"parsing module: {formatted_file}")
+
                 self.parse_module(module_info)
 
     def parse_module(self, module_info: ModuleObjectInfo) -> None:
-        for class_name, class_object in inspect.getmembers(module_info):
+        for class_name, class_object in inspect.getmembers(module_info.module_object):
             if inspect.isclass(class_object):
+                logger.info(f"Parsing Class: {class_name}")
                 class_parser = ClassParser(module_info, class_name, class_object)
                 class_parser.parse_class()
+
+    def cohesion_data_to_df(self) -> list[dict]:
+        df = pd.DataFrame(self.cohesion_data)
+        return df

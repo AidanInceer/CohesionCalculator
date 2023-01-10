@@ -1,13 +1,12 @@
-import glob
-import importlib
 import inspect
-import os
 from dataclasses import dataclass
 from types import MethodType
 
-import pandas as pd
-
-from src.core.data_objects import ClassObjectInfo, FunctionObjectInfo, ModuleObjectInfo
+from src.parsing.data_objects import (
+    ClassObjectInfo,
+    FunctionObjectInfo,
+    ModuleObjectInfo,
+)
 from src.utils.logger import logger
 
 
@@ -18,14 +17,20 @@ class FunctionParser:
     method: MethodType
 
     def parse_function(self):
-        func = getattr(self.class_info.class_object, self.method)
-        whole_function = inspect.getsource(func).replace("\n", " ").strip()
-        function_variables = list(func.__code__.co_varnames)
-        if "self" in function_variables and len(function_variables) == 1:
-            function_variables = []
+        function_object = getattr(self.class_info.class_object, self.method)
+        whole_function = self.get_full_function(function_object)
+        function_variables = list(function_object.__code__.co_varnames)
+
         if "self" in function_variables and len(function_variables) > 1:
-            function_variables = function_variables.remove("self")
-        num_function_variables = len(function_variables)
+            function_variables = function_variables[1:]
+            num_function_variables = len(function_variables)
+        elif "self" not in function_variables:
+            function_variables = function_variables
+            num_function_variables = len(function_variables)
+        else:
+            function_variables = []
+            num_function_variables = 0
+
         func_object = FunctionObjectInfo(
             function_variables, num_function_variables, whole_function
         )
@@ -45,4 +50,6 @@ class FunctionParser:
             "string_function": func_object.whole_function,
         }
         self.module_info.cohesion_data.append(data)
-        print(data)
+
+    def get_full_function(self, function_object):
+        return inspect.getsource(function_object).replace("\n", " ").strip()

@@ -1,14 +1,7 @@
-import glob
-import importlib
-import inspect
-import os
 from dataclasses import dataclass
-from types import MethodType
 
-import pandas as pd
-
-from src.core.data_objects import ClassObjectInfo, ModuleObjectInfo
-from src.core.function_parser import FunctionParser
+from src.parsing.data_objects import ClassObjectInfo, ModuleObjectInfo
+from src.parsing.function_parser import FunctionParser
 from src.utils.logger import logger
 
 
@@ -19,17 +12,13 @@ class ClassParser:
     class_object: type
 
     def parse_class(self):
-        logger.info(f"parsing Classes")
         self.class_methods = []
-        self.cls_attrs = []
+        logger.info(f"Collecting class attributes and methods")
+        self.cls_attrs = self.collect_class_attrs()
         for func in dir(self.class_object):
             self.is_method(func)
-            self.is_class_attr(func)
-
         self.num_cls_attrs = len(self.cls_attrs)
         self.num_cls_methods = len(self.class_methods)
-
-        logger.info(f"Creating class info object")
         class_info = ClassObjectInfo(
             self.class_object,
             self.class_name,
@@ -47,7 +36,12 @@ class ClassParser:
         if callable(getattr(self.class_object, func)) and not func.startswith("__"):
             self.class_methods.append(func)
 
-    def is_class_attr(self, func):
-        if not callable(getattr(self.class_object, func)):
-            if not func.startswith("__"):
-                self.cls_attrs.append(func)
+    def collect_class_attrs(self) -> list[str]:
+        try:
+            class_info = dict(self.class_object.__dict__)
+            class_attrs = class_info["__annotations__"].keys()
+            return list(class_attrs)
+        except:
+            logger.warning("class has no '__annotations__' attribute")
+            class_attrs = []
+            return class_attrs
