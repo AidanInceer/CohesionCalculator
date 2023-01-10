@@ -1,5 +1,5 @@
 from src.parsing.directory_parser import DirectoryParser
-import pandas as pd
+from src.calculator.cohesion import 
 
 if __name__ == "__main__":
     path = "./data/"
